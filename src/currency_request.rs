@@ -13,8 +13,6 @@ const URL: &str = "https://httpbin.org/ip";
 /// **NOTE:** Название валюты должно соответствовать названию соответствующей валюты в ответе API.
 /// (В данном случае используется API ЦБ РФ).
 ///
-/// **TODO:** Неплохо было бы отрефакторить эту жуть.
-///
 /// # Пример
 /// ```
 /// let mut eur_rub: String = currency_request::get_currency(eur)
@@ -26,20 +24,21 @@ const URL: &str = "https://httpbin.org/ip";
 /// * Ошибки сервера
 /// * Ошибки обработки ответа от сервера
 pub fn get_currency(currency: &str) -> String {
-    let mut response_json: HashMap<String, String> = send_request(URL);
-    let mut response_value = String::new();
-    if response_json.contains_key("Error") {
-        response_value = match response_json.get("Error") {
-            Some(text) => text.to_string(),
-            None => "Key not found".to_string(), // Если честно, то я не знаю, как в данном случае может получиться None
-        };
-        return response_value;
-    }
-    response_value = match response_json.get(currency) {
-        Some(text) => text.to_string(),
-        None => "Key not found".to_string(),
+    let response_json: HashMap<String, String> = send_request(URL);
+    let response_value: String = {
+        if response_json.contains_key("Error") {
+            match response_json.get("Error") {
+                Some(text) => text.to_string(),
+                None => "Key not found".to_string(), // Если честно, то я не знаю, как в данном случае может получиться None
+            }
+        } else {
+            match response_json.get(currency) {
+                Some(text) => text.to_string(),
+                None => "Key not found".to_string(),
+            }
+        }
     };
-    response_value
+    return response_value;
 }
 
 /// Функция выполяет get-запрос по API и возвращает ответ от сервера в виде `HashMap<String, String>`.
