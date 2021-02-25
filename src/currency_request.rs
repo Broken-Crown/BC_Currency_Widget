@@ -3,7 +3,7 @@ use std::collections::HashMap;
 /// URL по которому мы обращаемся к API.
 /// На данный момент не планируется добавление
 /// возможности настройки URL из интерфейа.
-const URL: &str = "https://httpbin.org/ip";
+const URL: &str = "https://www.cbr-xml-daily.ru/daily_json.js";
 
 /// Функция, которая возвращает курс конкретной валюты.
 ///
@@ -62,8 +62,7 @@ pub fn get_currency(currency: &str) -> String {
 /// * Ошибки обработки ответа от сервера
 fn send_request(url: &str) -> HashMap<String, String> {
     let response = reqwest::blocking::get(url);
-    let mut response_json: HashMap<String, String> = HashMap::new();
-    response_json = match response {
+    let response_json: HashMap<String, String> = match response {
         Ok(response) => {
             if response.status().is_success() {
                 match response.json::<HashMap<String, String>>() {
